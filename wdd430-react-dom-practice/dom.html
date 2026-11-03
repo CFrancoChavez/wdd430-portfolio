@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DOM vs React Practice</title>
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel CDN (Transpila JSX en el navegador) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <article id="direct-news"></article>
+  <article id="react-news"></article>
+  
+  <!-- 1. Manipulación directa del DOM (Imperativo: "Cómo hacerlo paso a paso") -->
+  <script>
+    const newsArticle = document.getElementById('direct-news');
+    const newParagraph = document.createElement('p');
+    const text = "Breaking news: Imperative programming!";
+    const headerContent = document.createTextNode(text);
+    newParagraph.appendChild(headerContent);  
+    newsArticle.appendChild(newParagraph);
+  </script>
+
+  <!-- 2. Manipulación con React (Declarativo: "Qué resultado quieres obtener") -->
+  <script type="text/jsx">
+    const domNode = document.getElementById('react-news');
+    const root = ReactDOM.createRoot(domNode);
+    root.render(<p>Breaking news: React is awesome!</p>);
+  </script>
+</body>
+</html>
