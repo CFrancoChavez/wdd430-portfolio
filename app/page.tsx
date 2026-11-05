@@ -10,7 +10,7 @@ const projects = [
   {
     title: 'CryptoDash - Cryptocurrency Dashboard',
     description: 'A real-time cryptocurrency tracking dashboard that visualizes market trends, prices, and live data from external crypto APIs.',
-    technologies: ['React', 'JavaScript', 'Tailwind CSS', 'REST API', 'Chart.js'],
+    technologies: ['JavaScript', 'Tailwind CSS', 'REST API', 'Vite'],
     link: 'https://github.com/CFrancoChavez/cryptodash'
   }
 ];
