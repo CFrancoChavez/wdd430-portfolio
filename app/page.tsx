@@ -2,16 +2,16 @@ import ProjectList from '@/components/ProjectList';
 
 const projects = [
   {
-    title: 'React Core Concepts Practice',
-    description: 'An interactive HTML practice file demonstrating React components, props, state, and DOM manipulation.',
-    technologies: ['React', 'JavaScript', 'HTML5', 'Babel'],
-    link: 'https://github.com/tu-usuario/wdd430-react-dom-practice'
+    title: 'Sleep Outside E-Commerce App',
+    description: 'An e-commerce web application for outdoor gear featuring dynamic product catalogs, cart management, and modular JavaScript architecture.',
+    technologies: ['JavaScript', 'HTML5', 'CSS3', 'REST API', 'Vite'],
+    link: 'https://github.com/CFrancoChavez/wdd330-sleepoutside'
   },
   {
-    title: 'Stripe Architecture Research',
-    description: 'A full-stack architectural breakdown of Stripe Dashboard tech stack and transaction layer.',
-    technologies: ['React', 'TypeScript', 'Ruby', 'PostgreSQL'],
-    link: 'https://github.com/tu-usuario/wdd430-portfolio'
+    title: 'CryptoDash - Cryptocurrency Dashboard',
+    description: 'A real-time cryptocurrency tracking dashboard that visualizes market trends, prices, and live data from external crypto APIs.',
+    technologies: ['React', 'JavaScript', 'Tailwind CSS', 'REST API', 'Chart.js'],
+    link: 'https://github.com/CFrancoChavez/cryptodash'
   }
 ];
 
