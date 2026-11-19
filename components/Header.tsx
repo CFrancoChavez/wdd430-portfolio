@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import NavLinks from './NavLinks';
 
 export default function Header() {
@@ -7,7 +8,9 @@ export default function Header() {
         Cesar Franco Chavez
       </div>
       <nav className="max-w-4xl mx-auto px-4 flex justify-between items-center" aria-label="Primary">
-        <NavLinks />
+        <Suspense fallback={<div className="h-6 w-48" />}>
+          <NavLinks />
+        </Suspense>
       </nav>
     </header>
   );
