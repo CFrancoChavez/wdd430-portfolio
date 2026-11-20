@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
+
+const emptySubscribe = () => () => {};
 
 export default function Footer() {
-  const [year, setYear] = useState<number>(2026);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+  const year = useSyncExternalStore(
+    emptySubscribe,
+    () => new Date().getFullYear(),
+    () => 2026
+  );
 
   return (
     <footer className="bg-gray-800 text-white py-4 mt-12">

@@ -5,13 +5,40 @@ import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-const ProjectFormSchema = z.object({
-  title: z.string().trim().min(2, 'Title must be at least 2 characters.'),
-  description: z.string().trim().min(10, 'Description must be at least 10 characters.'),
+const currentYear = new Date().getFullYear();
+
+const CreateProjectSchema = z.object({
+  title: z.string().trim().min(3, 'Title must be at least 3 characters.'),
+  description: z.string().trim().min(20, 'Description must be at least 20 characters.'),
   type: z.enum(['opensource', 'school']).default('school'),
-  technologies: z.string().trim().min(2, 'Please provide at least one technology.'),
+  technologies: z.string().trim().min(2, 'Add at least one technology.'),
+  yearCompleted: z.coerce
+    .number()
+    .int('Year must be a whole number.')
+    .gte(2000, 'Year must be 2000 or later.')
+    .lte(currentYear, `Year cannot be greater than ${currentYear}.`),
   link: z.string().trim().optional(),
 });
+
+const UpdateProjectSchema = z.object({
+  title: z.string().trim().min(3, 'Title must be at least 3 characters.'),
+  description: z.string().trim().min(20, 'Description must be at least 20 characters.'),
+  type: z.enum(['opensource', 'school']).default('school'),
+  technologies: z.string().trim().min(2, 'Add at least one technology.'),
+  link: z.string().trim().optional(),
+});
+
+export type State = {
+  errors?: {
+    title?: string[];
+    description?: string[];
+    type?: string[];
+    technologies?: string[];
+    yearCompleted?: string[];
+    link?: string[];
+  };
+  message?: string | null;
+};
 
 function parseTechnologiesJson(rawTech: string): string {
   const list = rawTech
@@ -21,38 +48,44 @@ function parseTechnologiesJson(rawTech: string): string {
   return JSON.stringify(list);
 }
 
-export async function createProject(formData: FormData) {
-  const raw = {
+export async function createProject(prevState: State, formData: FormData): Promise<State> {
+  const validatedFields = CreateProjectSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
     type: formData.get('type') || 'school',
     technologies: formData.get('technologies'),
+    yearCompleted: formData.get('yearCompleted'),
     link: formData.get('link') || '',
-  };
+  });
 
-  const parsed = ProjectFormSchema.safeParse(raw);
-  if (!parsed.success) {
-    throw new Error('Invalid project input.');
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing or invalid fields. Failed to create project.',
+    };
   }
 
-  const { title, description, type, technologies, link } = parsed.data;
+  const { title, description, type, technologies, yearCompleted, link } = validatedFields.data;
   const techJson = parseTechnologiesJson(technologies);
   const cleanLink = link && link.length > 0 ? link : null;
 
   try {
     await sql`
-      INSERT INTO projects (title, description, type, technologies, link)
+      INSERT INTO projects (title, description, type, technologies, year_completed, link)
       VALUES (
         ${title},
         ${description},
         ${type},
         ARRAY(SELECT jsonb_array_elements_text(${techJson}::jsonb)),
+        ${yearCompleted},
         ${cleanLink}
       )
     `;
   } catch (error) {
     console.error('Error creating project:', error);
-    throw new Error('Failed to create project. Please try again later.');
+    return {
+      message: 'Database Error: Failed to create project.',
+    };
   }
 
   revalidatePath('/projects');
@@ -67,15 +100,14 @@ export async function updateProject(id: string, formData: FormData) {
     throw new Error('Invalid project ID.');
   }
 
-  const raw = {
+  const parsed = UpdateProjectSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
     type: formData.get('type') || 'school',
     technologies: formData.get('technologies'),
     link: formData.get('link') || '',
-  };
+  });
 
-  const parsed = ProjectFormSchema.safeParse(raw);
   if (!parsed.success) {
     throw new Error('Invalid project input.');
   }
