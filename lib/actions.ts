@@ -1,5 +1,7 @@
 'use server';
 
+import { auth, signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
@@ -48,7 +50,17 @@ function parseTechnologiesJson(rawTech: string): string {
   return JSON.stringify(list);
 }
 
+async function requireOwnerSession() {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('Not authenticated');
+  }
+  return session;
+}
+
 export async function createProject(prevState: State, formData: FormData): Promise<State> {
+  await requireOwnerSession();
+
   const validatedFields = CreateProjectSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
@@ -91,10 +103,13 @@ export async function createProject(prevState: State, formData: FormData): Promi
   revalidatePath('/projects');
   revalidatePath('/projects/opensource');
   revalidatePath('/projects/school');
-  redirect('/projects');
+  revalidatePath('/dashboard/projects');
+  redirect('/dashboard/projects');
 }
 
 export async function updateProject(id: string, formData: FormData) {
+  await requireOwnerSession();
+
   const numericId = Number(id);
   if (!Number.isInteger(numericId) || numericId <= 0) {
     throw new Error('Invalid project ID.');
@@ -134,10 +149,13 @@ export async function updateProject(id: string, formData: FormData) {
   revalidatePath('/projects');
   revalidatePath('/projects/opensource');
   revalidatePath('/projects/school');
-  redirect('/projects');
+  revalidatePath('/dashboard/projects');
+  redirect('/dashboard/projects');
 }
 
 export async function deleteProject(id: string) {
+  await requireOwnerSession();
+
   const numericId = Number(id);
   if (!Number.isInteger(numericId) || numericId <= 0) {
     throw new Error('Invalid project ID.');
@@ -153,4 +171,24 @@ export async function deleteProject(id: string) {
   revalidatePath('/projects');
   revalidatePath('/projects/opensource');
   revalidatePath('/projects/school');
+  revalidatePath('/dashboard/projects');
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid email or password.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error; // re-throw so Next.js handles redirects correctly
+  }
 }

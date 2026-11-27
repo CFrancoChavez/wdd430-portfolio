@@ -162,7 +162,7 @@ export default function CreateProjectForm() {
           {isPending ? 'Saving...' : 'Save Project'}
         </button>
         <Link
-          href="/projects"
+          href="/dashboard/projects"
           className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
         >
           Cancel

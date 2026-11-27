@@ -11,6 +11,7 @@ export default function NavLinks() {
     { href: '/about', label: 'About' },
     { href: '/projects', label: 'Projects' },
     { href: '/contact', label: 'Contact' },
+    { href: '/dashboard/projects', label: 'Dashboard' },
   ];
 
   return (

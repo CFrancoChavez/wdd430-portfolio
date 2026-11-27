@@ -60,3 +60,23 @@ export async function fetchProjectsPages(query: string): Promise<number> {
   const totalCount = Number(rows[0]?.count ?? 0);
   return Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
 }
+export interface OwnerUser {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+}
+
+export async function getUserByEmail(email: string): Promise<OwnerUser | null> {
+  const { rows } = await sql<OwnerUser>`
+    SELECT
+      id::text,
+      name,
+      email,
+      password_hash AS "passwordHash"
+    FROM users
+    WHERE email = ${email}
+    LIMIT 1
+  `;
+  return rows[0] ?? null;
+}
