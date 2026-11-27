@@ -1,3 +1,11 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact',
+  description:
+    'Get in touch with Cesar Franco Chavez for full-stack web development opportunities.',
+};
+
 export default function ContactPage() {
   return (
     <main className="max-w-4xl mx-auto p-6 space-y-4">

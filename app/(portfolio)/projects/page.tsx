@@ -2,6 +2,12 @@ import { Suspense } from 'react';
 import { fetchFilteredProjects, fetchProjectsPages } from '@/lib/projects-db';
 import { ProjectSearch } from '@/components/ProjectSearch';
 import { Pagination } from '@/components/Pagination';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Projects',
+  description: 'Browse all web development and software engineering projects.',
+};
 
 async function ProjectsList({
   searchParamsPromise,

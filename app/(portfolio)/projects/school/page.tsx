@@ -1,5 +1,11 @@
 import { Suspense } from 'react';
 import { getProjects } from '@/lib/projects-db';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'School Projects',
+  description: 'Academic full-stack and database engineering projects.',
+};
 
 function ProjectCardSkeleton() {
   return (

@@ -1,5 +1,11 @@
 import { Suspense } from 'react';
 import { getProjects } from '@/lib/projects-db';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Open Source',
+  description: 'Open source software contributions and community projects.',
+};
 
 async function OpenSourceList() {
   const projects = await getProjects('opensource');

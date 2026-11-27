@@ -1,8 +1,45 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProjectById } from '@/lib/projects-db';
 import { updateProject } from '@/lib/actions';
+
+type EditPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateMetadata({
+  params,
+}: EditPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const numericId = Number(id);
+
+  if (!Number.isInteger(numericId) || numericId <= 0) {
+    return {
+      title: 'Project Not Found',
+      description: 'The requested portfolio project could not be found.',
+    };
+  }
+
+  const project = await getProjectById(numericId);
+
+  if (!project) {
+    return {
+      title: 'Project Not Found',
+      description: 'The requested portfolio project could not be found.',
+    };
+  }
+
+  return {
+    title: `Edit: ${project.title}`,
+    description: project.description,
+    openGraph: {
+      title: project.title,
+      description: project.description,
+    },
+  };
+}
 
 async function EditProjectForm({
   paramsPromise,
@@ -117,9 +154,7 @@ async function EditProjectForm({
   );
 }
 
-export default function EditProjectPage(props: {
-  params: Promise<{ id: string }>;
-}) {
+export default function EditProjectPage(props: EditPageProps) {
   return (
     <main className="container mx-auto max-w-2xl px-4 py-8 space-y-6">
       <div>
